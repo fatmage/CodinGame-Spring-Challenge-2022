@@ -34,43 +34,39 @@ if base_x < 1000:
     baseside = True
 
 if baseside:
-    patrol_route0[0][0] = 500
-    patrol_route0[0][1] = 3800
-    patrol_route0[1][0] = 4000
+    patrol_route0[0][0] = 600
+    patrol_route0[0][1] = 4100
+    patrol_route0[1][0] = 4300
     patrol_route0[1][1] = 860
 
-    patrol_route1[0][0] = 1000
+    patrol_route1[0][0] = 1600
     patrol_route1[0][1] = 6000
-    patrol_route1[1][0] = 3800
-    patrol_route1[1][1] = 5100
+    patrol_route1[1][0] = 6700
+    patrol_route1[1][1] = 1400
 
-    patrol_route2[0][0] = 7000
-    patrol_route2[0][1] = 700
-    patrol_route2[1][0] = 5400
-    patrol_route2[1][1] = 3800
+    patrol_route2[0][0] = 10000
+    patrol_route2[0][1] = 7500
+    patrol_route2[1][0] = 13000
+    patrol_route2[1][1] = 4000
 else:
-    patrol_route0[0][0] = 14000
+    patrol_route0[0][0] = 13000
     patrol_route0[0][1] = 8100
     patrol_route0[1][0] = 17000
-    patrol_route0[1][1] = 5000
+    patrol_route0[1][1] = 4500
 
-    patrol_route1[0][0] = 11000
+    patrol_route1[0][0] = 10500
     patrol_route1[0][1] = 7500
-    patrol_route1[1][0] = 12500
-    patrol_route1[1][1] = 5000
+    patrol_route1[1][0] = 16000
+    patrol_route1[1][1] = 2300
 
-    patrol_route2[0][0] = 17000
-    patrol_route2[0][1] = 2500
-    patrol_route2[1][0] = 14000
-    patrol_route2[1][1] = 3600
+    patrol_route2[0][0] = 800
+    patrol_route2[0][1] = 5100
+    patrol_route2[1][0] = 5200
+    patrol_route2[1][1] = 1300
 
 h0_patrol_target = 0
 h1_patrol_target = 0
 h2_patrol_target = 0
-
-h0_shielded = 12
-h1_shielded = 12
-h2_shielded = 12
 
 
 def dist_base(ax, ay):
@@ -89,9 +85,6 @@ while True:
     monsters = []
     heroes = []
     enemies = []
-    h0_shielded = h0_shielded + 1
-    h1_shielded = h1_shielded + 1
-    h2_shielded = h2_shielded + 1
     for i in range(entity_count):
         # _id: Unique identifier
         # _type: 0=monster, 1=your hero, 2=opponent hero
@@ -110,97 +103,97 @@ while True:
             heroes.append(Entity(_id, _type, x, y, shield_life, is_controlled, health, vx, vy, near_base, threat_for))
         if _type == 2:
             enemies.append(Entity(_id, _type, x, y, shield_life, is_controlled, health, vx, vy, near_base, threat_for))
-        
-             
-
+            
+    
     attacking_base = []
     moving_to_base = []
-    monster_near_base = None
-    monster_near_h0 = None
-    monster_near_h1 = None
-    monster_near_h2 = None
+    neutral_near_enemy = []
+    attacking_enemy = []
+    closest_to_base = None
+    closest_to_h0 = None
+    closest_to_h1 = None
+    closest_to_h2 = None
     enemy_near_h0 = None
     enemy_near_h1 = None
     enemy_near_h2 = None
-    for enemy in enemies:
-        if enemy_near_h0 == None:
-            enemy_near_h0 = enemy
-        elif dist_hero(enemy.x,enemy.y,heroes[0].x,heroes[1].x) < dist_hero(enemy_near_h0.x,enemy_near_h0.y,heroes[0].x,heroes[0].y):
-            enemy_near_h0 = enemy
-        if enemy_near_h1 == None:
-            enemy_near_h1 = enemy
-        elif dist_hero(enemy.x,enemy.y,heroes[1].x,heroes[1].x) < dist_hero(enemy_near_h1.x,enemy_near_h1.y,heroes[1].x,heroes[1].y):
-            enemy_near_h1 = enemy
-        if enemy_near_h2 == None:
-            enemy_near_h2 = enemy
-        elif dist_hero(enemy.x,enemy.y,heroes[2].x,heroes[2].x) < dist_hero(enemy_near_h2.x,enemy_near_h2.y,heroes[2].x,heroes[2].y):
-            enemy_near_h2 = enemy
-
     mana_to_spend = player_mana
-
     for i in range(len(monsters)):
         if monsters[i].near_base == 1 and monsters[i].threat_for == 1:
             attacking_base.append(monsters[i])
         if monsters[i].near_base == 0 and monsters[i].threat_for == 1:
             moving_to_base.append(monsters[i])
         if monsters[i].threat_for == 1:
-            if monster_near_base == None:
-                monster_near_base = monsters[i]
-            elif dist_base(monsters[i].x ,monsters[i].y) < dist_base(monster_near_base.x, monster_near_base.y):
-                monster_near_base = monsters[i]
-            if monster_near_h0 == None:
-                monster_near_h0 = monsters[i]
-            elif dist_hero(monsters[i].x ,monsters[i].y, heroes[0].x, heroes[0].y) < dist_hero(monster_near_h0.x, monster_near_h0.y,heroes[0].x, heroes[0].y):
-                monster_near_h0 = monsters[i]
-            if monster_near_h1 == None:
-                monster_near_h1 = monsters[i]
-            elif dist_hero(monsters[i].x ,monsters[i].y, heroes[1].x, heroes[1].y) < dist_hero(monster_near_h1.x, monster_near_h1.y,heroes[1].x, heroes[1].y):
-                monster_near_h1 = monsters[i]
+            if closest_to_base == None:
+                closest_to_base = monsters[i]
+            elif dist_base(monsters[i].x ,monsters[i].y) < dist_base(closest_to_base.x, closest_to_base.y):
+                closest_to_base = monsters[i]
+            if closest_to_h0 == None:
+                closest_to_h0 = monsters[i]
+            elif dist_hero(monsters[i].x ,monsters[i].y, heroes[0].x, heroes[0].y) < dist_hero(closest_to_h0.x, closest_to_h0.y,heroes[0].x, heroes[0].y):
+                closest_to_h0 = monsters[i]
+            if closest_to_h1 == None:
+                closest_to_h1 = monsters[i]
+            elif dist_hero(monsters[i].x ,monsters[i].y, heroes[1].x, heroes[1].y) < dist_hero(closest_to_h1.x, closest_to_h1.y,heroes[1].x, heroes[1].y):
+                closest_to_h1 = monsters[i]
+        if monsters[i].threat_for == 0 and dist_hero(heroes[2].x, heroes[2].y, monsters[i].x, monsters[i].y) <= 2200:
+            neutral_near_enemy.append(monsters[i])
+        if monsters[i].threat_for == 2 and dist_hero(heroes[2].x, heroes[2].y, monsters[i].x, monsters[i].y <= 2200):
+            attacking_enemy.append(monsters[i])
 
-    
-    if len(attacking_base) > 0: 
-        if enemy_near_h0 != None and mana_to_spend > 10 and dist_hero(heroes[0].x,heroes[0].y,enemy_near_h0.x,enemy_near_h0.y) <= 2200:
-            if h0_shielded > 12:
-                print('SPELL SHIELD', heroes[0]._id)
-                h0_shielded = 0
-            else:
-                if baseside:
-                    print('SPELL CONTROL', enemy_near_h0._id, 18000, 9000)
-                else:
-                    print('SPELL CONTROL', enemy_near_h0._id, 0, 0)
-            mana_to_spend = mana_to_spend - 10        
-        elif mana_to_spend > 10 and dist_hero(heroes[0].x, heroes[0].y, monster_near_base.x, monster_near_base.y) <= 1280:
+    for i in range(len(enemies)):
+        if enemy_near_h0 == None and dist_hero(enemies[i].x, enemies[i].y, heroes[0].x, heroes[0].y) <= 2200:
+            enemy_near_h0 = enemies[i]
+        elif enemy_near_h0 != None and dist_hero(enemies[i].x, enemies[i].y, heroes[0].x, heroes[0].y) < dist_hero(enemy_near_h0.x, enemy_near_h0.y, heroes[0].x, heroes[0].y):
+            enemy_near_h0 = enemies[i]
+        if enemy_near_h1 == None and dist_hero(enemies[i].x, enemies[i].y, heroes[1].x, heroes[1].y) <= 2200:
+            enemy_near_h1 = enemies[i]
+        elif enemy_near_h1 != None and dist_hero(enemies[i].x, enemies[i].y, heroes[1].x, heroes[1].y) < dist_hero(enemy_near_h1.x, enemy_near_h1.y, heroes[1].x, heroes[1].y):
+            enemy_near_h1 = enemies[i]
+        if enemy_near_h2 == None and dist_hero(enemies[i].x, enemies[i].y, heroes[2].x, heroes[2].y) <= 2200:
+            enemy_near_h2 = enemies[i]
+        elif enemy_near_h2 != None and dist_hero(enemies[i].x, enemies[i].y, heroes[2].x, heroes[2].y) < dist_hero(enemy_near_h2.x, enemy_near_h2.y, heroes[2].x, heroes[2].y):
+            enemy_near_h2 = enemies[i]
+
+    # HERO 0 defends base, shields himself
+    if enemy_near_h0 != None and mana_to_spend >= 10 and heroes[0].shield_life == 0:
+        print('SPELL SHIELD', heroes[0]._id, 'h0 shield')
+        mana_to_spend = mana_to_spend - 10
+    elif len(attacking_base) > 0:
+        if mana_to_spend >= 10 and dist_hero(heroes[0].x, heroes[0].y, closest_to_base.x, closest_to_base.y) <= 1280:
             if baseside:
-                print('SPELL WIND', heroes[0].x+1612, heroes[0].y+1612)
+                print('SPELL WIND', heroes[0].x+1612, heroes[0].y+1612, 'h0 wind')
             else: 
-                print('SPELL WIND', heroes[0].x-1612, heroes[0].y-1612)
+                print('SPELL WIND', heroes[0].x-1612, heroes[0].y-1612, 'h0 wind')
             mana_to_spend = mana_to_spend - 10
         else:
-            print('MOVE', monster_near_base.x, monster_near_base.y)
+            print('MOVE', closest_to_base.x, closest_to_base.y)
     else:
         if heroes[0].x == patrol_route0[h0_patrol_target][0] and heroes[0].y == patrol_route0[h0_patrol_target][1]:
             h0_patrol_target = 1 - h0_patrol_target
         print('MOVE', patrol_route0[h0_patrol_target][0], patrol_route0[h0_patrol_target][1])
 
-    if len(attacking_base) > 1:
-        if enemy_near_h1 != None and mana_to_spend > 10 and dist_hero(heroes[1].x,heroes[1].y,enemy_near_h1.x,enemy_near_h1.y) <= 2200:
-            if h1_shielded > 12:
-                print('SPELL SHIELD', heroes[1]._id)
-                h1_shielded = 0
-            else:
-                if baseside:
-                    print('SPELL CONTROL', enemy_near_h1._id, 18000, 9000)
-                else:
-                    print('SPELL CONTROL', enemy_near_h1._id, 0, 0)
+    # HERO 1 patrols surroundings and defends base from spiders and enemies
+    if enemy_near_h1 != None and mana_to_spend >= 10:
+        if enemy_near_h1.shield_life != 0 and heroes[1].shield_life == 0:
+            print('SPELL SHIELD', heroes[1]._id, 'h1 shield')
             mana_to_spend = mana_to_spend - 10
-        elif mana_to_spend > 10 and dist_hero(heroes[0].x, heroes[0].y, monster_near_h0.x, monster_near_h0.y) <= 1280:
+        elif enemy_near_h1.shield_life != 0:
+            print('MOVE', patrol_route1[h1_patrol_target][0], patrol_route1[h1_patrol_target][1])
+        else:
             if baseside:
-                print('SPELL WIND', heroes[1].x+1612, heroes[1].y+1612)
+                print('SPELL CONTROL', enemy_near_h1._id, 18000,9000, 'h1 control')
+            else:
+                print('SPELL CONTROL', enemy_near_h1._id, 0, 0, 'h1 control')
+            mana_to_spend = mana_to_spend - 10        
+    elif len(attacking_base) > 1:
+        if mana_to_spend >= 10 and dist_hero(heroes[0].x, heroes[0].y, closest_to_h0.x, closest_to_h0.y) <= 1280:
+            if baseside:
+                print('SPELL WIND', heroes[1].x+1612, heroes[1].y+1612, 'h1 wind')
             else: 
-                 print('SPELL WIND', heroes[1].x-1612, heroes[1].y-1612)
+                 print('SPELL WIND', heroes[1].x-1612, heroes[1].y-1612, 'h1 wind')
             mana_to_spend = mana_to_spend - 10
         else:
-            print('MOVE',attacking_base[0].x,attacking_base[0].y)
+            print('MOVE', closest_to_base.x, closest_to_base.y)
     elif len(moving_to_base) > 0:
         print('MOVE', moving_to_base[0].x, moving_to_base[0].y)
     else:
@@ -208,29 +201,44 @@ while True:
             h1_patrol_target = 1 - h1_patrol_target
         print('MOVE', patrol_route1[h1_patrol_target][0], patrol_route1[h1_patrol_target][1])
 
-    if monster_near_base != None:
-        if enemy_near_h2 != None and mana_to_spend > 10 and dist_hero(heroes[2].x,heroes[2].y,enemy_near_h2.x,enemy_near_h2.y) <= 2200:
-            if h2_shielded > 12:
-                print('SPELL SHIELD', heroes[2]._id)
-                h2_shielded = 0
-            else:
-                if baseside:
-                    print('SPELL CONTROL', enemy_near_h2._id, 18000, 9000)
-                else:
-                    print('SPELL CONTROL', enemy_near_h2._id, 0, 0)
-            mana_to_spend = mana_to_spend - 10   
-        if mana_to_spend > 10 and dist_hero(heroes[2].x, heroes[2].y, monster_near_base.x, monster_near_base.y) <= 1280:
-            if baseside:
-                print('SPELL WIND', heroes[2].x+1612, heroes[2].y+1612)
-            else: 
-                 print('SPELL WIND', heroes[2].x-1612, heroes[2].y-1612)
-            mana_to_spend = mana_to_spend - 10
+    # HERO 2 attacks the enemy base
+
+    if len(neutral_near_enemy) > 0 and mana_to_spend >= 10 and neutral_near_enemy[0].shield_life == 0:
+        if baseside:
+            print('SPELL CONTROL', neutral_near_enemy[0]._id, 18000, 9000, 'h2 control spider')
         else:
-            print('MOVE', monster_near_base.x, monster_near_base.y)
+            print('SPELL CONTROL', neutral_near_enemy[0]._id, 0, 0, 'h2 control spider')
+        
+        mana_to_spend = mana_to_spend - 10
+    elif len(attacking_enemy) > 0 and mana_to_spend >= 10 and attacking_enemy[0].shield_life == 0 and dist_hero(heroes[2].x, heroes[2].y, attacking_enemy[0].x, attacking_enemy[0].y) <= 1280:
+        if baseside:
+            print('SPELL WIND', 18000, 9000, 'h2 wind spider')
+        else:
+            print('SPELL WIND', 0, 0, 'h2 wind spider')
+        mana_to_spend = mana_to_spend - 10
+    elif enemy_near_h2 != None and mana_to_spend >= 10 and enemy_near_h2.shield_life == 0 and dist_hero(heroes[2].x, heroes[2].y, enemy_near_h2.x, enemy_near_h2.y) <= 1280:
+        if baseside:
+            print('SPELL WIND', 18000, 9000, 'h2 wind enemy')
+        else:
+            print('SPELL WIND', 0, 0, 'h2 wind enemy')
+        mana_to_spend = mana_to_spend - 10
     else:
-        if heroes[2].x == patrol_route2[h2_patrol_target][0] and heroes[2].y == patrol_route2[h2_patrol_target][1]:
-            h2_patrol_target = 1 - h2_patrol_target
-        print('MOVE', patrol_route2[h2_patrol_target][0], patrol_route2[h2_patrol_target][1])
-
-
+        if baseside:
+            if heroes[2].x < 10000 or heroes[2].y < 4000 or len(neutral_near_enemy) == 0:
+                if heroes[2].x == patrol_route2[h2_patrol_target][0] and heroes[2].y == patrol_route2[h2_patrol_target][1]:
+                    h2_patrol_target = 1 - h2_patrol_target
+                print('MOVE', patrol_route2[h2_patrol_target][0], patrol_route2[h2_patrol_target][1])
+            else:
+                print('MOVE', neutral_near_enemy[0].x, neutral_near_enemy[0].y)
+        else:
+            if heroes[2].x > 10000 or heroes[2].y > 4000 or len(neutral_near_enemy) == 0:
+                if heroes[2].x == patrol_route2[h2_patrol_target][0] and heroes[2].y == patrol_route2[h2_patrol_target][1]:
+                    h2_patrol_target = 1 - h2_patrol_target
+                print('MOVE', patrol_route2[h2_patrol_target][0], patrol_route2[h2_patrol_target][1])
+            else:
+                print('MOVE', neutral_near_enemy[0].x, neutral_near_enemy[0].y)
+    #else:
+    #    if heroes[2].x == patrol_route2[h2_patrol_target][0] and heroes[2].y == patrol_route2[h2_patrol_target][1]:
+    #        h2_patrol_target = 1 - h2_patrol_target
+    #    print('MOVE', patrol_route2[h2_patrol_target][0], patrol_route2[h2_patrol_target][1])
 
